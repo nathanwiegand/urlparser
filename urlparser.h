@@ -23,7 +23,16 @@ typedef struct {
   URLGroup fragment;
 } URL;
 
+typedef enum {
+  URL_SCHEME    = 2,
+  URL_AUTHORITY = 4,
+  URL_PATH      = 5,
+  URL_QUERY     = 7,
+  URL_FRAGMENT  = 9
+} URLField;
+
 int parseURL(const char *url, URL *storage);
+int parseURLField(const char *url, URL *storage, URLField field);
 
 char *readURLField(const char *url, URLGroup field);
 

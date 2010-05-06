@@ -14,6 +14,10 @@
 */
 
 int parseURL(const char *url, URL *storage) {
+  return parseURLField(url, storage, 0);
+}
+
+int parseURLField(const char *url, URL *storage, URLField field) {
   URLGroup groups[10];
   const char *c = url;
 
@@ -29,7 +33,9 @@ int parseURL(const char *url, URL *storage) {
     groups[1].end++;
     c++;
   }
+
   groups[2].end = groups[1].end;
+
   if(*c == ':') {
     groups[1].end++;
     c++;
@@ -37,6 +43,11 @@ int parseURL(const char *url, URL *storage) {
     groups[1].start = groups[2].start = 0;
     groups[1].end   = groups[2].end   = 0;
     c = url;
+  }
+
+  storage->scheme    = groups[2];
+  if(field == URL_SCHEME) {
+    return 0;    
   }
 
   /* URLGroups 3 and 4 
@@ -54,18 +65,29 @@ int parseURL(const char *url, URL *storage) {
     }
     groups[4].end = groups[3].end;
   }
+
+  storage->authority = groups[4];
+  if(field == URL_AUTHORITY) {
+    return 0;
+  }
   /* URLGroup 5
   */ 
   groups[5].start = groups[5].end = groups[4].end; 
+
   while(*c != '?' && *c != '#' && *c != '\0') {
     groups[5].end++;
     c++;
   }
 
+  storage->path = groups[5];
+  if(field == URL_PATH) {
+    return 0;
+  }
   /* URLGroups 6 and 7
   */ 
   groups[6].end  = groups[6].start = groups[5].end; 
   groups[7].end  = groups[7].start = groups[5].end; 
+
   if(*c == '?') {
     groups[7].start++;
     groups[6].end++;
@@ -77,10 +99,15 @@ int parseURL(const char *url, URL *storage) {
     groups[7].end = groups[6].end;
   } 
 
+  storage->query = groups[7];
+  if(field == URL_QUERY) {
+    return 0;
+  }
   /* URLGroups 8 and 9
   */
   groups[8].end  = groups[8].start = groups[7].end; 
   groups[9].end  = groups[9].start = groups[7].end; 
+
   if(*c == '#') {
     groups[9].start++;
     groups[8].end++;
@@ -92,14 +119,9 @@ int parseURL(const char *url, URL *storage) {
     groups[9].end = groups[8].end;
   } 
 
-  storage->scheme    = groups[2];
-  storage->authority = groups[4];
-  storage->path      = groups[5];
-  storage->query     = groups[7];
   storage->fragment  = groups[9];
   return 0;
 }
-
 
 char *readURLField(const char* url, URLGroup field) {
   char *response;
@@ -113,7 +135,6 @@ char *readURLField(const char* url, URLGroup field) {
 
   return response;
 }
-
 
 
 int cmpURLField(const char *url, URLGroup field, const char *to) {

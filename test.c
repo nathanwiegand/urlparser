@@ -134,6 +134,22 @@ void test7() {
   assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thefragment=true#withhash?another", storage.fragment),"withhash?another"));
 }
 
+void test8() {
+  URL storage;
+  char *path = "http://www.google.com/some/path/whatev?somequery#hash";
+  assert(parseURLField(path, &storage, URL_SCHEME) == 0);
+  assert(!cmpURLField(path, storage.scheme, "http"));
+  assert(parseURLField(path, &storage, URL_AUTHORITY) == 0);
+  assert(!cmpURLField(path, storage.authority, "www.google.com"));
+  assert(parseURLField(path, &storage, URL_PATH) == 0);
+  assert(!cmpURLField(path, storage.path, "/some/path/whatev"));
+  assert(parseURLField(path, &storage, URL_QUERY) == 0);
+  assert(!cmpURLField(path, storage.query, "somequery"));
+  assert(parseURLField(path, &storage, URL_FRAGMENT) == 0);
+  assert(!cmpURLField(path, storage.fragment, "hash"));
+
+}
+
 int main(int argc, char** argv) {
   test1();
   test2();
@@ -142,5 +158,6 @@ int main(int argc, char** argv) {
   test5();
   test6();
   test7();
+  test8();
   return 0;
 }

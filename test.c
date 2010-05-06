@@ -5,7 +5,8 @@
 
 #include "urlparser.h"
 
-#define assert(x) do{if(!(x)) fprintf(stderr,"%s:%d: %s\n",__FILE__,__LINE__,#x);fflush(stderr);}while(0)
+#define assert(x) do{if(!(x)) fprintf(stderr,"%s:%d: %s\n", \
+    __FILE__,__LINE__,#x);fflush(stderr);}while(0)
 #define assertValue(url, x,v) assert(bcmp(v, url+x.start, x.end - x.start) == 0)
 
 void printURLGroups(const char *url, URL *storage) {

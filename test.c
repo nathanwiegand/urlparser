@@ -58,8 +58,10 @@ void test3() {
   URL storage;
   assert(parseURL("http://google.com", &storage) == 0) ;
   assert(!strcmp(readURLField("http://google.com", storage.scheme), "http"));
+  assert(!cmpURLField("http://google.com", storage.scheme, "http"));
   assert(parseURL("ftp://google.com", &storage) == 0) ;
   assert(!strcmp(readURLField("ftp://google.com", storage.scheme), "ftp"));
+  assert(!cmpURLField("ftp://google.com", storage.scheme, "ftp"));
   assert(parseURL("ssh://google.com", &storage) == 0) ;
   assert(!strcmp(readURLField("ssh://google.com", storage.scheme), "ssh"));
   assert(parseURL("ssh-http-ftp://google.com", &storage) == 0) ;
@@ -112,6 +114,7 @@ void test6() {
   assert(!strcmp(readURLField("http://www.google.com/some/path", storage.query),""));
   assert(            parseURL("http://www.google.com:port/some/path/?thequery=true", &storage) == 0);
   assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thequery=true", storage.query),"thequery=true"));
+  assert(!cmpURLField("http://www.google.com:port/some/path/?thequery=true", storage.query,"thequery=true"));
   assert(            parseURL("http://www.google.com:port/some/path/?thequery=true#withhash", &storage) == 0);
   assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thequery=true#withhash", storage.query),"thequery=true"));
   assert(            parseURL("http://www.google.com:port/some/path/?thequery=true#withhash?another", &storage) == 0);

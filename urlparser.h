@@ -25,5 +25,7 @@ typedef struct {
 
 int parseURL(const char *url, URL *storage);
 
-char *readURLField(const char* url, URLGroup field);
+char *readURLField(const char *url, URLGroup field);
+
+int cmpURLField(const char *url, URLGroup field, const char *to);
 #endif

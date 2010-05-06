@@ -113,3 +113,17 @@ char *readURLField(const char* url, URLGroup field) {
 
   return response;
 }
+
+
+
+int cmpURLField(const char *url, URLGroup field, const char *to) {
+  if(field.start > field.end) {
+    return -1;
+  }
+
+  if(field.start == field.end) {
+    return !(to == 0 || *to == '\0');
+  }
+
+  return bcmp(to, url + field.start, field.end - field.start);
+}

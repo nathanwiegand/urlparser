@@ -27,9 +27,9 @@ int parseURL(const char *url, URL *storage) {
   */
   while(*c != ':' && *c != '/' && *c != '?' && *c != '#' && *c != '\0') {
     groups[1].end++;
-    groups[2].end++;
     c++;
   }
+  groups[2].end = groups[1].end;
   if(*c == ':') {
     groups[1].end++;
     c++;
@@ -46,13 +46,13 @@ int parseURL(const char *url, URL *storage) {
 
   if(*c == '/' && *(c+1) == '/') {
     groups[4].start += 2;
-    groups[4].end += 2;
+    groups[3].end += 2;
     c += 2; 
     while(*c != '/' && *c != '?' && *c != '#' && *c != '\0') {
       groups[3].end++;
-      groups[4].end++;
       c++;
     }
+    groups[4].end = groups[3].end;
   }
   /* URLGroup 5
   */ 
@@ -68,14 +68,13 @@ int parseURL(const char *url, URL *storage) {
   groups[7].end  = groups[7].start = groups[5].end; 
   if(*c == '?') {
     groups[7].start++;
-    groups[7].end++;
     groups[6].end++;
     c++;
     while(*c != '#' && *c != '\0') {
       groups[6].end ++;
-      groups[7].end ++;
       c++;
     } 
+    groups[7].end = groups[6].end;
   } 
 
   /* URLGroups 8 and 9
@@ -84,14 +83,13 @@ int parseURL(const char *url, URL *storage) {
   groups[9].end  = groups[9].start = groups[7].end; 
   if(*c == '#') {
     groups[9].start++;
-    groups[9].end++;
     groups[8].end++;
     c++;
     while(*c != '\0' && *c != '\0') {
       groups[8].end ++;
-      groups[9].end ++;
       c++;
     } 
+    groups[9].end = groups[8].end;
   } 
 
   storage->scheme    = groups[2];
@@ -107,7 +105,7 @@ char *readURLField(const char* url, URLGroup field) {
   char *response;
 
   if(field.end - field.start <= 0) 
-    return 0;
+    return "";
 
   response = (char*) malloc((sizeof(char)) * (field.end - field.start + 1));
   bcopy(url + field.start, response, field.end - field.start);

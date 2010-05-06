@@ -65,7 +65,7 @@ void test3() {
   assert(parseURL("ssh-http-ftp://google.com", &storage) == 0) ;
   assert(!strcmp(readURLField("ssh-http-ftp://google.com", storage.scheme), "ssh-http-ftp"));
   assert(parseURL("google.com", &storage) == 0) ;
-  assert(readURLField("google.com", storage.scheme) == 0);
+  assert(!strcmp(readURLField("google.com", storage.scheme), ""));
 }
 
 void test4() {
@@ -79,10 +79,56 @@ void test4() {
    * hostname, then it MUST be preceeded by a scheme.
    */
   assert(            parseURL("www.google.com", &storage) == 0);
-  assert(readURLField("www.google.com", storage.authority) == 0);
+  assert(!strcmp(readURLField("www.google.com:8080", storage.authority),""));
 
   assert(            parseURL("http://www.google.com:8080", &storage) == 0);
   assert(!strcmp(readURLField("http://www.google.com:8080", storage.authority),"www.google.com:8080"));
+}
+
+void test5() {
+  URL storage;
+  assert(    parseURL("http://www.google.com", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com", storage.path),""));
+
+  assert(            parseURL("http://www.google.com/some/path/", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com/some/path/", storage.path),"/some/path/"));
+
+  assert(            parseURL("http://www.google.com:port/some/path/", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/", storage.path),"/some/path/"));
+
+  assert(            parseURL("http://www.google.com:port/some/path/?query", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?query", storage.path),"/some/path/"));
+
+  assert(            parseURL("http://www.google.com:port/some/path/#hash", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/#hash", storage.path),"/some/path/"));
+  assert(            parseURL("http://www.google.com:port/some/path/#hash/looks/like/more", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/#hash/looks/like/more", storage.path),"/some/path/"));
+}
+void test6() {
+  URL storage;
+  assert(    parseURL("http://www.google.com", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com", storage.query),""));
+  assert(    parseURL("http://www.google.com/some/path", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com/some/path", storage.query),""));
+  assert(            parseURL("http://www.google.com:port/some/path/?thequery=true", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thequery=true", storage.query),"thequery=true"));
+  assert(            parseURL("http://www.google.com:port/some/path/?thequery=true#withhash", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thequery=true#withhash", storage.query),"thequery=true"));
+  assert(            parseURL("http://www.google.com:port/some/path/?thequery=true#withhash?another", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thequery=true#withhash?another", storage.query),"thequery=true"));
+}
+void test7() {
+  URL storage;
+  assert(    parseURL("http://www.google.com", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com", storage.fragment),""));
+  assert(    parseURL("http://www.google.com/some/path", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com/some/path", storage.fragment),""));
+  assert(            parseURL("http://www.google.com:port/some/path/?thefragment=true", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thefragment=true", storage.fragment),""));
+  assert(            parseURL("http://www.google.com:port/some/path/?thefragment=true#withhash", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thefragment=true#withhash", storage.fragment),"withhash"));
+  assert(            parseURL("http://www.google.com:port/some/path/?thefragment=true#withhash?another", &storage) == 0);
+  assert(!strcmp(readURLField("http://www.google.com:port/some/path/?thefragment=true#withhash?another", storage.fragment),"withhash?another"));
 }
 
 int main(int argc, char** argv) {
@@ -90,5 +136,8 @@ int main(int argc, char** argv) {
   test2();
   test3();
   test4();
+  test5();
+  test6();
+  test7();
   return 0;
 }

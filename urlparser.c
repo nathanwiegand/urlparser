@@ -113,7 +113,7 @@ int parseURLField(const char *url, URL *storage, URLField field) {
     groups[9].start++;
     groups[8].end++;
     c++;
-    while(*c != '\0' && *c != '\0') {
+    while(*c != '\0') {
       groups[8].end ++;
       c++;
     } 
